@@ -15,18 +15,19 @@
         }
       }
     },
-    "target": "es2022",
+    "target": "esnext",
     "keepClassNames": true,
     "loose": false,
     "externalHelpers": false,
-    "preserveAllComments": false
+    "preserveAllComments": true
   },
   "module": {
-    "type": "commonjs",
+    "type": "nodenext",
     "strict": true,
     "strictMode": true,
     "lazy": false,
-    "noInterop": false
+    "importInterop": "swc"
   },
-  "sourceMaps": true
+  "sourceMaps": true,
+  "inlineSourcesContent": true
 }

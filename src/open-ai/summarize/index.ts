@@ -1,13 +1,9 @@
 import { readFile } from "fs-extra";
-import { OpenAIChat } from "../chat";
+import { OpenAIChat } from "../chat/index.js";
 import { ChatCompletionRequestMessageRoleEnum } from "openai";
-import { Logger } from "../../logger";
+import { LoggerInstance } from "#logger";
 
-const logger = new Logger(
-  "SummarizeFunctions",
-  process.env.LOG_LEVEL ?? "warn",
-  process.env.LOG_DIR
-);
+const logger = new LoggerInstance("SummarizeFunctions");
 
 export function chunkString(str: string, maxLen = 3000) {
   if (str.length > maxLen) {

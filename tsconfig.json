@@ -1,22 +1,23 @@
 {
   "compilerOptions": {
-    "noEmit": true,
+    "noEmit": false,
     "allowJs": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "verbatimModuleSyntax": false,
-    "moduleResolution": "Node",
-    "module": "CommonJS",
+    "module": "NodeNext",
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
-    "resolveJsonModule": true,
     "downlevelIteration": true,
     "strictPropertyInitialization": false,
-    "target": "ES2022",
+    "target": "ESNext",
     "strict": true,
     "paths": {
-      "#errors": ["./src/errors"],
-    }
+      "#*": ["./src/*/index.ts"],
+    },
+    "outDir": "./dist",
+    "rootDir": "./",
+    "sourceMap": true,
   },
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "./dist"],
 }

@@ -1,17 +1,13 @@
 import axios from "axios";
-import { BingInstance } from "./bing";
-import { Logger } from "./logger";
-import { OpenAIChat } from "./open-ai";
+import { BingInstance } from "#bing";
+import { LoggerInstance } from "#logger";
+import { OpenAIChat } from "#open-ai";
 import { readFile } from "fs-extra";
 import { JSDOM } from "jsdom";
 import { Readability } from "@mozilla/readability";
-import { chunkString, summarizeText } from "./open-ai/summarize";
+import { chunkString, summarizeText } from "#open-ai/summarize";
 
-const logger = new Logger(
-  "WorkerFunctions",
-  process.env.LOG_LEVEL ?? "warn",
-  process.env.LOG_DIR
-);
+const logger = new LoggerInstance("WorkerFunctions");
 
 async function getWebdata(url: string) {
   const res = await axios.get(url);

@@ -1,5 +1,8 @@
-import { OpenAIChat } from "./open-ai";
-import { readFile } from "fs-extra";
+import { LoggerInstance } from "#logger";
+import { OpenAIChat } from "#open-ai";
+import fs from "fs-extra";
+
+const logger = new LoggerInstance("ChatFunctions");
 
 export function currentDate(locale: string) {
   return new Date().toLocaleDateString(locale);
@@ -13,13 +16,15 @@ Assistant does not know what day, month, or year it is. This function will retur
  * @param input Full prompt for what to search for and summarize. The prompt should have as much information as the helper could need.
  */
 export async function askHelper(input: string) {
+  logger.info(`Asking helper "${input}"`);
+
   const worker = new OpenAIChat({
     openAIConfig: {
       apiKey: process.env.OPENAI_API_KEY,
     },
     chatConfig: {
       model: "gpt-3.5-turbo-0613",
-      prompt: await readFile("./worker-prompt.txt", "utf-8"),
+      prompt: await fs.readFile("./worker-prompt.txt", "utf-8"),
     },
   });
 

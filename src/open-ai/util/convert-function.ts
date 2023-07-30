@@ -11,7 +11,9 @@ export async function getFunctions(file: string) {
   }).createSchema("*");
 
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const functionsModule = require(join(__dirname, "../../../dist", file));
+  const functionsModule = await import(
+    join(process.env.PWD ?? "", "dist", file + ".js")
+  );
 
   const functions = Object.entries(schema.definitions ?? {}).map(
     ([name, def]) => {

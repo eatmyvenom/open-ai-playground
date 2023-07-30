@@ -7,8 +7,8 @@ import {
   CreateChatCompletionRequest,
   OpenAIApi,
 } from "openai";
-import { getFunctions } from "../util";
-import { Logger } from "../../logger";
+import { getFunctions } from "../util/index.js";
+import { LoggerInstance } from "../../logger/index.js";
 import { inspect } from "util";
 
 type UsableFunction = ChatCompletionFunctions & {
@@ -30,7 +30,7 @@ export class OpenAIChat {
   public readonly messages: ChatCompletionRequestMessage[];
   public readonly functions: ChatCompletionFunctions[] = [];
   private callableFunctions: { [key: string]: (...args: any[]) => any } = {};
-  private logger: Logger;
+  private logger: LoggerInstance;
 
   public constructor(cfg: OpenAIChatConfig) {
     this.config = cfg;
@@ -39,11 +39,7 @@ export class OpenAIChat {
       { role: "system", content: this.config.chatConfig.prompt },
     ];
 
-    this.logger = new Logger(
-      "OpenAIChat",
-      this.config.logLevel ?? "warn",
-      process.env.LOG_DIR
-    );
+    this.logger = new LoggerInstance("AIChat");
 
     delete this.config.chatConfig.prompt;
   }

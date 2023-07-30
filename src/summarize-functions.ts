@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Logger } from "./logger";
+import { LoggerInstance } from "#logger";
 import { convert } from "html-to-text";
 
 async function getWebdata(url: string) {
@@ -17,11 +17,7 @@ async function getWebdata(url: string) {
   }
 }
 
-const logger = new Logger(
-  "SummarizeFunctions",
-  process.env.LOG_LEVEL ?? "warn",
-  process.env.LOG_DIR
-);
+const logger = new LoggerInstance("SummarizeFunctions");
 
 /**
  * @param input Object containing a url input for what url to read from the web.

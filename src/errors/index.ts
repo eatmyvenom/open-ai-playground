@@ -1,1 +1,1 @@
-export * from "./NoMessageResponseError";
+export * from "./NoMessageResponseError.js";

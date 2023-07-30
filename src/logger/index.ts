@@ -1,56 +1,52 @@
-import { writeFile } from "fs-extra";
-import { join } from "path";
+import fs from "fs-extra";
+import { LoggerInstance } from "./Logger.instance.js";
+import path from "path";
 
-const logLevels = ["debug", "info", "warn", "error"];
-
-export class Logger {
-  private logLevel: number;
-  private name: string;
-  private logDirectory?: string;
-
-  constructor(name: string, logLevel: string, logDirectory?: string) {
-    this.name = name;
-    this.logLevel = logLevels.indexOf(logLevel);
-    this.logDirectory = logDirectory;
-  }
-
-  public debug(...args: any[]) {
-    this.log(0, [...args].join("\n") + "\n");
-  }
-
-  public info(...args: any[]) {
-    this.log(1, [...args].join("\n") + "\n");
-  }
-
-  public warn(...args: any[]) {
-    this.log(2, [...args].join("\n") + "\n");
-  }
-
-  public error(...args: any[]) {
-    this.log(3, [...args].join("\n") + "\n");
-  }
-
-  public setLogLevel(logLevel: string) {
-    this.logLevel = logLevels.indexOf(logLevel);
-  }
-
-  private log(level: number, text: string) {
-    if (this.logLevel <= level) {
-      const logString = `[${this.name}] (${logLevels[level]}) ${text}`;
-      process.stdout.write(logString);
-      if (typeof this.logDirectory === "string") {
-        writeFile(
-          join(
-            process.cwd(),
-            this.logDirectory,
-            `${process.env.START_TIME}.log`
-          ),
-          logString + "\n",
-          {
-            flag: "a",
-          }
-        ).catch((err) => console.error(err));
-      }
-    }
-  }
+let createdDirectory = false;
+const logDir = path.join(process.env.PWD ?? "", "logs");
+if (!fs.existsSync(logDir)) {
+  createdDirectory = true;
+  fs.mkdirSync(logDir);
 }
+
+export const Logger = new LoggerInstance("main", "🧾");
+
+process.on("warning", (warning) => {
+  Logger.warn(warning.message);
+  Logger.warn(warning.stack);
+});
+
+process.on("exit", (code) => {
+  Logger.out(`${Logger.name} exiting with code ${code}`);
+});
+
+process.on("uncaughtException", (error, origin) => {
+  Logger.err(error.name);
+  Logger.err(origin);
+  Logger.err(error.message);
+  Logger.err(error.stack);
+  Logger.err("EXITING PROCESS");
+
+  process.exit(1);
+});
+
+const start = new Date();
+
+Logger.debug(`argv: [${process.argv}]`);
+Logger.debug(
+  createdDirectory
+    ? `Creating logs directory at ${logDir}`
+    : "Logs directory found"
+);
+Logger.debug("----- Process info -----");
+Logger.debug(`START TIME - ${start.toString()}`);
+Logger.debug(`PLATFORM - ${process.platform} ${process.arch}`);
+Logger.debug(`PID - ${process.pid}\nCWD - ${process.cwd()}`);
+Logger.debug(
+  `NODE VERSION - ${process.versions.node}\nV8 VERSION - ${process.versions.v8}`
+);
+
+Logger.debug("------------------------");
+
+export default Logger;
+export * from "./Logger.instance.js";

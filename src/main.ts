@@ -1,42 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dotenv from "dotenv";
-import { OpenAIChat } from "./open-ai";
-import { readFile } from "fs-extra";
-import { BingInstance } from "./bing";
-import { ChatInterface } from "./chat-interface";
-import { Logger } from "./logger";
+import { OpenAIChat } from "#open-ai";
+import fs from "fs-extra";
+import { BingInstance } from "#bing";
+import { ChatInterface } from "#chat-interface";
+import Logger from "#logger";
+import { findSourceMap } from "module";
 
-process.env.START_TIME = `${new Date().getTime()}`;
+const logger = Logger;
 
-dotenv.config();
+const registerEnv = dotenv.config();
 
-console.log(process.env);
-
-const logger = new Logger(
-  "Main",
-  process.env.LOG_LEVEL ?? "warn",
-  process.env.LOG_DIR
-);
-
-process.on("uncaughtException", (err) => {
-  logger.error("Uncaught Exception: " + err.message);
-  logger.error(err.stack);
-  process.exit(-1);
-});
-
-process.on("unhandledRejection", (err) => {
-  logger.error("Unhandled Rejection: " + err);
-  logger.error((err as Error)?.stack ?? "NO STACK TRACE");
-  process.exit(-1);
-});
-
-process.on("warning", (err) => {
-  logger.warn("Warning: " + err);
-  logger.warn(err.stack);
-});
+if (registerEnv.error) {
+  throw registerEnv.error;
+}
 
 async function getPrompt() {
-  return readFile("./prompt.txt", "utf-8");
+  return fs.readFile("./prompt.txt", "utf-8");
 }
 
 async function gptTest() {
