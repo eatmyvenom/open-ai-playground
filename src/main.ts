@@ -4,10 +4,13 @@ import { OpenAIChat } from "#open-ai";
 import fs from "fs-extra";
 import { BingInstance } from "#bing";
 import { ChatInterface } from "#chat-interface";
-import Logger from "#logger";
-import { findSourceMap } from "module";
+import Logger, { bindProcessEvents, logDebugInfo, testLogs } from "#logger";
 
 const logger = Logger;
+
+bindProcessEvents();
+logDebugInfo();
+testLogs();
 
 const registerEnv = dotenv.config();
 

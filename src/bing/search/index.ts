@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { LoggerInstance } from "../../logger/Logger.instance.js";
 
 export interface BingSearchResponse {
   _type: string;
@@ -145,6 +146,7 @@ export interface ErrorResult {
 
 export class BingInstance {
   private axios: AxiosInstance;
+  private logger = new LoggerInstance("BingAPI");
 
   public constructor(config: { apiKey: string }) {
     this.axios = axios.create({
@@ -153,14 +155,19 @@ export class BingInstance {
         "Ocp-Apim-Subscription-Key": config.apiKey,
       },
     });
+
+    this.logger.verbose("Bing API ready");
   }
 
   public async search(
     query: string
   ): Promise<BingSearchResponse | ErrorResult> {
     try {
+      const searchURL = "search?q=" + encodeURIComponent(query);
+      this.logger.verbose(`URL: ${searchURL}`);
+
       const searchResponse = await this.axios.get<BingSearchResponse>(
-        "search?q=" + encodeURIComponent(query)
+        searchURL
       );
 
       return searchResponse.data;

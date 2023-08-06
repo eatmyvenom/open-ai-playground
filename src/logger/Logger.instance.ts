@@ -35,7 +35,7 @@ export class LoggerInstance {
     public errorStream = process.stderr,
     public formatters = new LoggerInstance.formatters()
   ) {
-    this.debug("Registered logger");
+    this.verbose("Registered logger");
     LoggerInstance.loggers.push(this);
   }
 
@@ -135,7 +135,7 @@ export class LoggerInstance {
    * @param {any} content
    */
   public explain(content: any | any[]) {
-    this.print("EXPLN", this.formatters.sanatize(content), this.name, "blue");
+    this.print("EXPLN", this.formatters.sanatize(content), this.name, "cyan");
   }
 
   /**
@@ -165,7 +165,7 @@ export class LoggerInstance {
   public err = this.error;
 
   private shouldLog(level: string): boolean {
-    return LoggerInstance.logLevels.includes(level)
+    return LoggerInstance.logLevels.includes(level.toUpperCase())
       ? LoggerInstance.logLevels.slice(0, Number(this.logLevel)).includes(level)
       : true;
   }
@@ -185,7 +185,7 @@ export class LoggerInstance {
     emoji = this.emoji
   ) {
     emoji = emoji ? `${emoji.trim()} ` : "";
-    type = this.formatters.logLevel(type, color);
+    const logType = this.formatters.logLevel(type, color);
     const logName = this.formatters.logName(name);
 
     const logFilePath = path.join(
@@ -197,11 +197,12 @@ export class LoggerInstance {
     const stream: Writable =
       type !== "ERROR" ? this.logStream : this.errorStream;
 
-    for (const logStr of logData?.toString()?.split("\n") ?? "") {
+    for (let logStr of logData?.toString()?.split("\n") ?? "") {
       const time = this.formatters.logTime();
+      logStr = chalk[color](logStr);
 
       if (this.shouldLog(type)) {
-        const str = `${emoji}${time}${logName}${type}${chalk[color](logStr)}\n`;
+        const str = `${emoji}${time}${logName}${logType}${logStr}\n`;
         stream.write(str);
       }
 
@@ -224,12 +225,12 @@ export class LoggerInstance {
    */
   public static formatters = class {
     logLevel = (type: string, color: ColorName | ModifierName) =>
-      `${chalk[color](type.slice(0, 5).padEnd(5))} | `;
+      `${chalk[color](type.slice(0, 7).padEnd(7))} | `;
 
     logName = (n = "") =>
-      `\u001B[36m${n.trim().slice(0, 8).padEnd(8)}\u001B[0m | `;
+      `${chalk.cyanBright(n.trim().slice(0, 8).padEnd(8))} | `;
 
-    logTime = () => `\u001B[34m${this.shortTime().trim()}\u001B[0m | `;
+    logTime = () => `${chalk.blueBright(this.shortTime().trim())} | `;
 
     longTime(): string {
       const d = new Date();
